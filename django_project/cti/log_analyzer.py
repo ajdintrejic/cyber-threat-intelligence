@@ -88,9 +88,9 @@ def analyze(filename):
         lines[i] = lines[i].rstrip()
     
 
-    #uniqueIPs = []
-    #uniqueIPs = IPFilter(lines)
-    #saveIPs(uniqueIPs)
+    uniqueIPs = []
+    uniqueIPs = IPFilter(lines)
+    saveIPs(uniqueIPs)
 
     for i in range(len(lines)):
         line = lines[i]

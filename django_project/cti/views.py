@@ -1,12 +1,14 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from .forms import UploadFileForm
-from cti.models import IP
+from .forms import UploadFileForm, AddressForm
+from cti.models import IP, Log_line
 from .models import Apache_log
 from .log_analyzer import analyze
+from django.template.loader import get_template
+from .pdf_generator import render_to_pdf
 
 def home(request):
     return render(request, 'cti/home.html')
@@ -30,3 +32,44 @@ def upload(request):
     else:
         form = UploadFileForm()
     return render(request, 'cti/upload.html', {'form': form})
+
+@login_required
+def report(request):
+    if request.method == 'POST':
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address = form.cleaned_data['address']
+            try:
+                data = IP.objects.get(address=address)
+                template = get_template('cti/viewReport.html')
+                context = {
+                    "ip_address" : data.address,
+                    "ip_hostname" : data.hostname,
+                    "ip_city" : data.city,
+                    "ip_region" : data.region,
+                    "ip_country" : data.countryname,
+                    "ip_postal" : data.postal,
+                    "ip_timezone" : data.timezone,
+                    "ip_longitude" : data.longitude,
+                    "ip_latitude" : data.latitude,
+                    "ip_org" : data.org,
+                }
+
+                html = template.render(context)
+                if 'html' in request.POST:
+                    return HttpResponse(html)
+
+                pdf = render_to_pdf('cti/viewReport.html', context)
+                if pdf:
+                    response = HttpResponse(pdf, content_type='application/pdf')
+                    content = "attachment; filename='Report.pdf'"
+                    download = request.GET.get("download")
+                    response['Content-Disposition'] = content
+                    return response
+                return HttpResponse("Not found")
+
+            except(IP.DoesNotExist):
+                messages.warning(request, 'IP address not found.')
+    else:
+        form = AddressForm()
+    return render(request, 'cti/report.html', {'form' : form})
