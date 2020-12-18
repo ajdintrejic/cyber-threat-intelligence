@@ -1,0 +1,16 @@
+<h3>Report based on: {{parameter}} - {{value}}</h3>
+<h4>A total of {{count}} IP addresses have been found:</h4>
+<div><table>
+    {% if data %}
+    <ol>
+        {% for item in data%}
+        <li>
+            {{item.address}} <br/>
+            <br/>
+        </li>
+        {% endfor %}
+    {% else %}
+        No data found.
+    {% endif %}
+    </ol>
+</table></div>

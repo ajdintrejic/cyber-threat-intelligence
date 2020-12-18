@@ -1,14 +1,34 @@
-<h3>Report for IP address: {{ip_address}}</h3>
+<h3>Report for IP address: {{ip.address}}</h3>
 
 <div>
     <h4>General information</h4>
-    HOSTNAME: {{ip_hostname}} <br/>
-    ORGANISATION: {{ip_org}} <br/>
-    CITY: {{ip_city}} <br/>
-    REGION: {{ip_region}} <br/>
-    COUNTRY: {{ip_country}} <br/>
-    POSTAL CODE: {{ip_postal}} <br/>
-    TIMEZONE: {{ip_timezone}} <br/>
-    LATITUDE: {{ip_latitude}} <br/>
-    LONGITUDE: {{ip_longitude}} <br/>
+    HOSTNAME: {{ip.hostname}} <br/>
+    ORGANISATION: {{ip.org}} <br/>
+    CITY: {{ip.city}} <br/>
+    REGION: {{ip.region}} <br/>
+    COUNTRY: {{ip.countryname}} <br/>
+    POSTAL CODE: {{ip.postal}} <br/>
+    TIMEZONE: {{ip.timezone}} <br/>
+    LATITUDE: {{ip.latitude}} <br/>
+    LONGITUDE: {{ip.longitude}} <br/>
+    <hr/>
+    <h4>Requests</h4>
+    {% if ip_log %}
+    <ol>
+        {% for item in ip_log %}
+        <li>
+            TIME: {{item.timestamp}} <br/>
+            REQUEST METHOD: {{item.requestMethod}} <br/>
+            PATH: {{item.path}} <br/>
+            HTTP VERSION: {{item.httpVersion}} <br/>
+            RESPONSE: {{item.response}} <br/>
+            SIZE IN BYTES: {{item.sizeInBytes}} <br/>
+            <br/>
+        </li>
+        {% endfor %}
+    {% else %}
+        No log data found.
+    {% endif %}
+    
+    </ol>
 </div>
